@@ -10,4 +10,20 @@ class Edge (abc.ABC):
     is going to be computed.
 
     """
-    pass
+    def __init__(self, origin, dest, saving):
+        """
+        Initialise.
+
+        :param origin: The node of origin.
+        :param dest: The node of destination.
+        :param saving: The saving value associated to this edge.
+
+        :attr inverse: The inverse edge.
+        """
+        self.origin = origin
+        self.dest = dest
+        self.saving = saving
+        self.inverse = None
+
+    def __repr__(self):
+        return f"{self.origin} -> {self.dest}"

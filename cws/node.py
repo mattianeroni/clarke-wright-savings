@@ -9,4 +9,20 @@ class Node (abc.ABC):
     on which the Clarke Wright Savings heuristic
     is going to be computed.
     """
-    pass
+    def __init__(self, id, dn_edge, nd_edge):
+        """
+        Initialise.
+
+        :param id: The unique id of the node. (NOTE: There is no control
+                  on the unicity of this id)
+        :param dn_edge: Depot-to-node edge.
+        :param nd_edge: Node-to-depot edge.
+        :attr route: The route where the node currently is.
+        """
+        self.id = id
+        self.dn_edge = dn_edge
+        self.nd_edge = nd_edge
+        self.route = None
+
+    def __repr__(self):
+        return str(self.id)
