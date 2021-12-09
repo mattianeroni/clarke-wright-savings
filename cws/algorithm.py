@@ -1,6 +1,7 @@
 import random
 import operator
 import collections
+import functools
 
 
 
@@ -10,6 +11,12 @@ class Route (object):
     of edges.
     """
     def __init__ (self, edges = None):
+        """
+        Initialise.
+
+        :param edges: The edges that currently constitute the route.
+        :attr cost: The overall cost of the route.
+        """
         self.edges = edges or collections.deque()
         self.cost = sum(edge.cost for edge in self.edges)
 
@@ -121,13 +128,34 @@ class ClarkeWrightSavings (object):
             if len(routes) <= minroutes:
                 return routes, sum(r.cost for r in routes)
 
-            
-
-
-
+        # Returns the solution found
         return routes, sum(r.cost for r in routes)
 
 
+    def _metaheuristic (self, starting_sol, biased, biasedfunc, reverse, maxcost,
+                        maxroutes, maxiter, maxnoimp):
+        """
+        """
+        # Initialise the behaviour we want to use to generate new solutions
+        heuristic = functools.partial(self.heuristic, biased, biasedfunc, reverse, maxcost, minroutes)
+        # Initialise the current best solution
+        best, cost = sarting_sol
+        missed_improvements = 0
+        # Starts the iterated local search
+        for _ in range(maxiter):
+            # Generates a new solution
+            newsol, newcost = heuristic()
+            missed_improvements += 1
+            # Eventually updates the best
+            if newcost < cost:
+                best, cost = newsol, newcost
+                missed_improvements = 0
+            # If the maximum number of iterations with no improvement is exceeded
+            # returns the current best
+            if missed_improvements > maxnoimp:
+                return best, cost
+        # Return the best solution found at the end of the process
+        return best, cost
 
 
 
