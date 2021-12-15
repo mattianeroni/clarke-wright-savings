@@ -17,7 +17,7 @@ class Node (abc.ABC):
                   on the unicity of this id)
         :param dn_edge: Depot-to-node edge.
         :param nd_edge: Node-to-depot edge.
-        :attr route: The route where the node currently is.
+        :attr route: The cluster where the node currently is.
         """
         self.id = id
         self.dn_edge = dn_edge
