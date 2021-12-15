@@ -2,37 +2,11 @@ import random
 import operator
 import collections
 import functools
+import itertools
+import math
 import dataclasses
 import typing
 
-
-class Route (object):
-    """
-    An instance of this class represents a route made by a sequence
-    of edges.
-    """
-    def __init__ (self, edges = None):
-        """
-        Initialise.
-
-        :param edges: The edges that currently constitute the route.
-        :attr cost: The overall cost of the route.
-        """
-        self.edges = edges or collections.deque()
-        self.cost = sum(edge.cost for edge in self.edges)
-
-    def extend (self, edges):
-        """
-        This method is preferable for extending the route with new
-        edges because it automatically updates the cost too.
-
-        :param edges: The new edges to add to the route.
-        """
-        self.edges.extend(edges)
-        self.cost += sum(edge.cost for edge in self.edges)
-
-    def __repr__(self):
-        return "->".join([edge for edge in self.edges])
 
 
 def biased_randomisation (array, beta=0.3):
@@ -51,8 +25,79 @@ def biased_randomisation (array, beta=0.3):
     L = len(array)
     options = list(array)
     for _ in range(L):
-        idx = int(log(random.random(), 1.0 - beta)) % len(options)
+        idx = int(math.log(random.random(), 1.0 - beta)) % len(options)
         yield options.pop(idx)
+
+
+
+class Route (object):
+    """
+    An instance of this class represents a route made by a sequence
+    of edges.
+    """
+    def __init__ (self, edges = None):
+        """
+        Initialise.
+
+        :param edges: The edges that currently constitute the route.
+        :attr cost: The overall cost of the route.
+        """
+        self.edges = edges or collections.deque()
+        self.cost = sum(edge.cost for edge in self.edges)
+
+    @property
+    def first_node (self):
+        """
+        The first node of the route visited after the origin.
+        """
+        return self.edges[0].dest
+
+    @property
+    def last_node (self):
+        """
+        The last node of the route visited before returning to the
+        origin.
+        """
+        return  self.edges[-1].origin
+
+    def popleft (self):
+        """
+        This method removes the first edge from the route and takes care
+        of updating the overall cost too.
+        """
+        removed = self.edges.popleft()
+        self.cost -= removed.cost
+
+    def popright (self):
+        """
+        This method removes the last edge from the route and takes care
+        of updating the overall cost too.
+        """
+        removed = self.edges.pop()
+        self.cost -= removed.cost
+
+    def extend (self, edges):
+        """
+        This method is preferable for extending the route with new
+        edges because it automatically updates the cost too.
+
+        :param edges: The new edges to add to the route.
+        """
+        self.edges.extend(edges)
+        self.cost += sum(edge.cost for edge in self.edges)
+
+    def append (self, edge):
+        """
+        This method is preferable for adding a new edge to the route
+        because it automatically updates the cost too.
+
+        :param edge: The new edge to add to the route.
+        """
+        self.edges.append(edge)
+        self.cost += edge.cost
+
+    def __repr__(self):
+        return str(list(self.edges))
 
 
 
@@ -70,6 +115,8 @@ class CWSConfiguration:
                         required.
     :param reverse: If True every time a merging is tried, the possibility
                     to reverse the routes we are going to merge is considered.
+                    Usually this parameter is False when the reverse of an edge
+                    is different by the edge itself.
     :param metaheuristic: If True more solutions are generated doing a sort
                         of iterated local search, otherwise a single solution
                         is returned using the classic heuristic.
@@ -81,15 +128,15 @@ class CWSConfiguration:
     :param maxcost: The maximum cost of a route that makes it feasible.
     :param minroutes: The minimum number of routes allowed.
     """
-    biased : bool = False
-    biasedfunc : typing.Callable = biased_randomisation,
-    reverse : bool = True,
-    metaheuristic : bool = False,
-    start : typing.Tuple[typing.List[Route], int] = None,
-    maxiter : int = 1000,
-    maxnoimp : int = 500,
-    maxcost : float = float('inf'),
-    minroutes : float = float('inf')
+    biased : bool = True
+    biasedfunc : typing.Callable = biased_randomisation
+    reverse : bool = True
+    metaheuristic : bool = False
+    start : typing.Tuple[typing.List[Route], int] = None
+    maxiter : int = 1000
+    maxnoimp : int = 500
+    maxcost : float = float('inf')
+    minroutes : float = float('-inf')
 
 
 
@@ -126,14 +173,14 @@ class ClarkeWrightSavings (object):
 
         :param route: The route to reverse.
         """
-        pass
+        return Route(collections.deque(reversed([e.inverse for e in route.edges])))
 
-    def heuristic (self, biased, biasedfunc, reverse, maxcost, minroutes):
+    def heuristic (self, config):
         """
         This method is the core of the algorithm. Here is where the well-known
         Clarke & Wright Savings algorithm is implemented.
 
-        It is indirectly used by the mainmethod __call__, or it can be used
+        It is indirectly used by the main method __call__, or it can be used
         alone for generating a single solution using different berameters or
         behaviour.
 
@@ -157,9 +204,78 @@ class ClarkeWrightSavings (object):
 
         # Starts the iterative merging process...
         for edge in savings_iterator:
+
             # Check if the minimum number of routes has been reached
             if len(routes) <= minroutes:
                 return routes, sum(r.cost for r in routes)
+
+            # Get the routes connected by the currently considered edge
+            origin, dest = edge.origin, edge.dest
+            iroute, jroute = edge.origin.route, edge.dest.route
+
+            # If the routes are the same, next edge is considered
+            if iroute == jroute:
+                continue
+
+            # Check if extremes of edge are internal. In this case,
+            # next edge is considered.
+            if (origin != iroute.first_node and origin != iroute.last_node) or \
+                (dest != jroute.first_node and dest != jroute.last_node):
+                continue
+
+            # If the merging is possible with no reversions...
+            if origin == iroute.last_node and dest == jroute.first_node:
+                # If the maxcost of a route is not exceeded...
+                if iroute.cost + jroute.cost - edge.saving <= maxcost:
+                    # Remove the edges to the origin in the merged routes
+                    iroute.popright(); jroute.popleft();
+                    # Build the new route
+                    iroute.append(edge)
+                    iroute.extend(jroute.edges)
+                    # Update the reference to the route in the nodes
+                    edge.dest.route = iroute
+                    for e in itertools.islice(jroute.edges, 0, len(jroute.edges) - 1):
+                        e.dest.route = iroute
+                    # Update the list of routes
+                    routes.remove(jroute)
+                # Next edge is considered
+                continue
+
+            # If it is not possible to reverse the route and the edge
+            if not reverse and (origin != iroute.last_node or dest != jroute.first_node):
+                continue
+
+            # If the reversion of routes is possible
+            if reverse:
+                # Initialise the reversed edge and routes before eventual
+                # reversing process.
+                redge, riroute, rjroute = edge, iroute, jroute
+                # If both routes should be reversed, reverse the edge
+                if origin == iroute.first_node and dest == jroute.last_node:
+                    redge = edge.inverse
+                # Reverse the first route
+                if origin != iroute.last_node and dest == jroute.first_node:
+                    routes.remove(iroute)
+                    riroute = self._reversed(iroute)
+                    routes.append(riroute)
+                # Reverse the second route
+                if origin == iroute.last_node and dest != jroute.first_node:
+                    routes.remove(jroute)
+                    rjroute = self._reversed(jroute)
+                    routes.append(rjroute)
+                # Once routes and edge are ready for merging, check the cost
+                # If the cost of the new route does not exceed the maximum allowed...
+                if riroute.cost + rjroute.cost - redge.saving <= maxcost:
+                    # Remove the edges to the origin in the merged routes
+                    riroute.popright(); rjroute.popleft();
+                    # Build the new route
+                    riroute.append(edge)
+                    riroute.extend(rjroute.edges)
+                    # Update the reference to the route in the nodes
+                    for e in itertools.islice(riroute.edges, 0, len(riroute.edges) - 1):
+                        e.dest.route = riroute
+                    # Update the list of routes
+                    routes.remove(rjroute)
 
         # Returns the solution found
         return routes, sum(r.cost for r in routes)
@@ -179,7 +295,8 @@ class ClarkeWrightSavings (object):
         # Initialise the behaviour we want to use to generate new solutions
         heuristic = functools.partial(self.heuristic, config)
         # Initialise the current best solution
-        best, cost = sarting_sol
+        best, cost = starting_sol
+        maxiter, maxnoimp = config.maxiter, config.maxnoimp
         missed_improvements = 0
         # Starts the iterated local search
         for _ in range(maxiter):
@@ -207,7 +324,7 @@ class ClarkeWrightSavings (object):
                         execution of the algorithm (see CWSConfiguration class).
         """
         best, cost = self.heuristic(config)
-        if metaheuristic:
-            starting_sol = start or self.heuristic(config)
+        if config.metaheuristic:
+            starting_sol = config.start or self.heuristic(config)
             best, cost = self._metaheuristic(starting_sol, config)
         return best, cost

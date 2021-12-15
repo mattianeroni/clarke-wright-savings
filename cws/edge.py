@@ -28,4 +28,4 @@ class Edge (abc.ABC):
         self.inverse = None
 
     def __repr__(self):
-        return f"{self.origin} -> {self.dest}"
+        return f"({self.origin} -> {self.dest})"
