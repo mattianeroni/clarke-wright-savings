@@ -16,6 +16,6 @@ The main elements are:
 Let's suppose we want to implement the CWS to a classsic Vehicle Routing Problem (VRP). In this case, our nodes will be the customers to visit, and the edges will be the streets connecting customers to each other.
 
 So, first, let's go to import the CWS package.
-```
+``` python
 import cws
 ```
