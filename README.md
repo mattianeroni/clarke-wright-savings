@@ -60,6 +60,6 @@ As you can see, we passed the set of customers as nodes, and the set of streets 
 We are now ready to define the configuration of parameters and run the algorithm. For doing that, the `CWSConfiguration` class is instantiated, and the function `__call__` of the `solver` is called. We will go later into more details for each single parameter.
 ``` python
 config = cws.CWSConfiguration()
-solution, cost = solver.__call__()
+solution, cost = solver.__call__(config)
 ```
 As you can see, the method `__call__` returns a tuple, where the first element is the list of routes, and the second one the cost of the returned.
