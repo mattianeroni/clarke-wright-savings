@@ -82,14 +82,14 @@ config = cws.CWSConfiguration(
 The parameters which is possible to change are the following:
 -   **biased**: If True a biased randomisation in the selection of elements from the savings list is used, otherwise not (for further information on the biased randomisation take a look at *Grasas, A., Juan, A. A., Faulin, J., De Armas, J., & Ramalhinho, H. (2017). Biased randomization of heuristics using skewed probability distributions: a survey and some applications. Computers & Industrial Engineering, 110, 216-228.*).
 -   **biasedfunc**: The probabilistic function used to carry out the biased randomisation. The default function is the quasi-geometric distribution reported below.
->``` python 
->def biased_randomisation (array, beta=0.3):
->    L = len(array)
->    options = list(array)
->    for _ in range(L):
->        idx = int(math.log(random.random(), 1.0 - beta)) % len(options)
->        yield options.pop(idx)
->```
+>>>``` python 
+>>>def biased_randomisation (array, beta=0.3):
+>>>    L = len(array)
+>>>    options = list(array)
+>>>    for _ in range(L):
+>>>        idx = int(math.log(random.random(), 1.0 - beta)) % len(options)
+>>>        yield options.pop(idx)
+>>>```
 
 
 
