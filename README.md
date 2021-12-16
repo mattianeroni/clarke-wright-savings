@@ -19,3 +19,20 @@ So, first, let's go to import the CWS package.
 ``` python
 import cws
 ```
+
+Then, let's create our own classes representing the customers and the streets.
+``` python
+class Street (cws.Edge):
+    pass
+    
+    
+class Customer (cws.Node):
+    def __init__(self, id, city):
+        self.city = city
+        dn_edge = Street("depot", self, 0, cost=distance(depot, city))
+        nd_edge = Street(self, "depot", 0, cost=distance(city, depot))
+        dn_edge.inverse = nd_edge
+        nd_edge.inverse = dn_edge
+        super(Customer, self).__init__(id, dn_edge, nd_edge)
+
+```
