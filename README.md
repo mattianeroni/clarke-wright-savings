@@ -81,27 +81,15 @@ config = cws.CWSConfiguration(
 ```
 The parameters which is possible to change are the following:
 -   **biased**: If True a biased randomisation in the selection of elements from the savings list is used, otherwise not (for further information on the biased randomisation take a look at *Grasas, A., Juan, A. A., Faulin, J., De Armas, J., & Ramalhinho, H. (2017). Biased randomization of heuristics using skewed probability distributions: a survey and some applications. Computers & Industrial Engineering, 110, 216-228.*).
--   **biasedfunc**: The probabilistic function used to carry out the biased randomisation. The default function is a quasi-geometric distribution
-``` python 
-def biased_randomisation (array, beta=0.3):
-    """
-    This method carry out a biased-randomised selection over a certain list.
-    The selection is based on a quasi-geometric function:
-
-                    f(x) = (1 - beta) ^ x
-
-    and it therefore prioritise the first elements in list.
-
-    :param array: The set of options already sorted from the best to the worst.
-    :param beta: The parameter of the quasi-geometric distribution.
-    :return: The element picked at each iteration.
-    """
-    L = len(array)
-    options = list(array)
-    for _ in range(L):
-        idx = int(math.log(random.random(), 1.0 - beta)) % len(options)
-        yield options.pop(idx)
-```
+-   **biasedfunc**: The probabilistic function used to carry out the biased randomisation. The default function is the quasi-geometric distribution reported below.
+>``` python 
+>def biased_randomisation (array, beta=0.3):
+>    L = len(array)
+>    options = list(array)
+>    for _ in range(L):
+>        idx = int(math.log(random.random(), 1.0 - beta)) % len(options)
+>        yield options.pop(idx)
+>```
 
 
 
