@@ -4,7 +4,7 @@
 -----------------------------------------------------------------
 
 #### End users
-This repository is supposed to be useful for people who have to quickly implement the Clarke &amp; Wright Savings (CWS) algorithm or a similar version inspired by it.
+This repository is supposed to be useful for people who have to quickly implement the Clarke &amp; Wright Savings (CWS) algorithm or a similar procedure inspired by it.
 
 #### Structure 
 The main elements are:
@@ -36,3 +36,10 @@ class Customer (cws.Node):
         super(Customer, self).__init__(id, dn_edge, nd_edge)
 
 ```
+As you can see, both classes inherits from the relative `Edge` and `Node` class implemented into the CWS package. In thi way, they inherits method and attributes that will be used by the algorithm to carry out its computations.
+
+In case of the `Street`, we don't need to include any additional aspect. Each street will therefore be instantiated as
+``` python
+newstreet = Street(origin, dest, saving, cost)
+```
+where origin is the `Customer` of origin, dest the `Customer` of destination, saving the respective saving value, and cost the respective cost value.
