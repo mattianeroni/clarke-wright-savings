@@ -46,3 +46,6 @@ where *origin* is the `Customer` of origin, *dest* the `Customer` of destination
 
 Concerning the customers, additional attributes are in this case considered, such as a reference to the *city* where the customer is located.
 You can see from the `__init__` method as each `Node` requires an *id*, and the edges (or in this case streets) connecting the the node to the depot and the depot to the node (i.e., respectively `nd_edge` and `dn_edge`).
+
+> **NOTE** It is very important to note that each edge (or street in this case) needs to know which is its inverse and the user is supposed to make this assignment!
+> Given *i* a generic edge going from node *a* to node *b*, the inverse is the edge going from *b* to *a*, and, in some cases, it may have a different saving and cost value.
