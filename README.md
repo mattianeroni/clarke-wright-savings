@@ -63,3 +63,20 @@ config = cws.CWSConfiguration()
 solution, cost = solver.__call__(config)
 ```
 As you can see, the method `__call__` returns a tuple, where the first element is the list of routes, and the second one the cost of the returned.
+
+#### Configuration parameters
+In the previous example, the default configuration was used. There is although the possibility to define a different configuration that affects the behaviour of the algorithm. The default `CWSConfiguration` class is reported below:
+``` python
+config = cws.CWSConfiguration(
+    biased = True,
+    biasedfunc = cws.biased_randomisation,
+    reverse = True,
+    metaheuristic = True,
+    start = None,
+    maxiter = 1000,
+    maxnoimp = 500,
+    maxcost = float("inf"),
+    minroutes = float("-inf"),
+)
+```
+The parameters which is possible to change are the following:
