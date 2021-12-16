@@ -50,3 +50,9 @@ You can see from the `__init__` method as each `Node` requires an *id*, and the 
 > **NOTE** It is very important to note that each edge (or street in this case) needs to know which is its inverse and the user is supposed to make this assignment!
 
 > Given *i* a generic edge going from node *a* to node *b*, the inverse is the edge going from *b* to *a*, and, in some cases, it may have a different saving and cost value.
+
+Now that we have created our own customised nodes and edges instances, we can proceed instantiating the `ClarkeWrightSavings` algorithm:
+``` python
+solver = cws.ClarkeWrightSavings(nodes=customers, edges=streets)
+```
+As you can see, we passed the set of customers as nodes, and the set of streets as edges.
