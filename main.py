@@ -33,8 +33,8 @@ class Street (cws.Edge):
 class Customer (cws.Node):
     def __init__(self, id, city):
         self.city = city
-        dn_edge = cws.Edge("depot", self, 0, cost=distance(depot, city))
-        nd_edge = cws.Edge(self, "depot", 0, cost=distance(city, depot))
+        dn_edge = Street("depot", self, 0, cost=distance(depot, city))
+        nd_edge = Street(self, "depot", 0, cost=distance(city, depot))
         dn_edge.inverse = nd_edge
         nd_edge.inverse = dn_edge
         super(Customer, self).__init__(id, dn_edge, nd_edge)
