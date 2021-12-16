@@ -6,6 +6,9 @@
 #### End users
 This repository is supposed to be useful for people who have to quickly implement the Clarke &amp; Wright Savings (CWS) algorithm or a similar procedure inspired by it.
 
+#### Installation
+`pip install cws`
+
 #### Structure 
 The main elements are:
 - the main `ClarkeWrightSavings` class representing the algorithm instance;
@@ -68,10 +71,10 @@ As you can see, the method `__call__` returns a tuple, where the first element i
 In the previous example, the default configuration was used. There is although the possibility to define a different configuration that affects the behaviour of the algorithm. The default `CWSConfiguration` class is reported below:
 ``` python
 config = cws.CWSConfiguration(
-    biased = True,
+    biased = False,
     biasedfunc = cws.biased_randomisation,
     reverse = True,
-    metaheuristic = True,
+    metaheuristic = False,
     start = None,
     maxiter = 1000,
     maxnoimp = 500,
@@ -80,6 +83,7 @@ config = cws.CWSConfiguration(
 )
 ```
 The parameters which is possible to change are the following:
+
 -   **biased**: If True a biased randomisation in the selection of elements from the savings list is used, otherwise not (for further information on the biased randomisation take a look at *Grasas, A., Juan, A. A., Faulin, J., De Armas, J., & Ramalhinho, H. (2017). Biased randomization of heuristics using skewed probability distributions: a survey and some applications. Computers & Industrial Engineering, 110, 216-228.*).
 
 -   **biasedfunc**: The probabilistic function used to carry out the biased randomisation. The default function is the quasi-geometric distribution reported below. If *biased* is False, this function is never used.
@@ -92,22 +96,18 @@ The parameters which is possible to change are the following:
 >        yield options.pop(idx)
 >```
 
-
 -   **reverse**: If True, every time the algorithm merges two routes, considers the possibility to reverse them. Usually, this parameter is set to False when the inverse of an edge, is different in terms of cost or saving by the edge itself.
 
+-   **minroutes**: The minimum number of routes we want to reach. When this number is reached, the merging process of the CWS is interrupted.
 
--   **metaheuristic**: 
+-   **maxcost**: The maximum cost a route (i.e., the sum of its edges' costs) can have to be considered feasible. If the sum of costs of two routes exceed this threshold, their merging is not possible.
 
+-   **metaheuristic**: If True the CWS algorithm is incorporated in a metaheuristic framework (more precisely an Iterated Local Search) that generates many more solutions to finally return the best found so far. Note that if the *biased* parameter is True, each solution explored by the metaheurisctic is different by the others, while, if *biased* is False, each generated solution is equal to the previous one. Hence, setting *metaheuristic* to True, makes sense only if *biased* is True.
 
+-   **start**: The starting solution from which the metaheuristic starts from. This parameter gives the possibility to generate the starting solution using a different configuration. For instance, in literature is usual to generate the first solution using a greedy behaviour (i.e., `biased = False`), and then starting the metaheuristic framework with the biased randomisation.
 
+-   **maxiter**: The maximum number of solutions explored by the metaheuristic before returning the best solution found so far.
 
-    :param metaheuristic: If True more solutions are generated doing a sort
-                        of iterated local search, otherwise a single solution
-                        is returned using the classic heuristic.
-    :param start: The starting solution generated with a different method or
-                 parameters, we want the metaheuristic to start from.
-    :param maxiter: The maximum number of solutions explored in case of a
-                    metaheuristic.
-    :param maxnoimp: The maximum number of
-    :param maxcost: The maximum cost of a route that makes it feasible.
-    :param minroutes: The minimum number of routes allowed.
+-   **maxnoimp**: The maximum number of solutions explored with no improvement obtained. Even if *maxiter* is not reached, but the number of solutions explored with no improvement exceed this threshold, the metaheuristic stops.
+
+-------------------------------------------------------------------
