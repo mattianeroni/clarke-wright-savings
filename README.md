@@ -81,28 +81,26 @@ config = cws.CWSConfiguration(
 ```
 The parameters which is possible to change are the following:
 -   **biased**: If True a biased randomisation in the selection of elements from the savings list is used, otherwise not (for further information on the biased randomisation take a look at *Grasas, A., Juan, A. A., Faulin, J., De Armas, J., & Ramalhinho, H. (2017). Biased randomization of heuristics using skewed probability distributions: a survey and some applications. Computers & Industrial Engineering, 110, 216-228.*).
--   **biasedfunc**: The probabilistic function used to carry out the biased randomisation. The default function is the quasi-geometric distribution reported below.
->>>``` python 
->>>def biased_randomisation (array, beta=0.3):
->>>    L = len(array)
->>>    options = list(array)
->>>    for _ in range(L):
->>>        idx = int(math.log(random.random(), 1.0 - beta)) % len(options)
->>>        yield options.pop(idx)
->>>```
+
+-   **biasedfunc**: The probabilistic function used to carry out the biased randomisation. The default function is the quasi-geometric distribution reported below. If *biased* is False, this function is never used.
+>``` python 
+>def biased_randomisation (array, beta=0.3):
+>    L = len(array)
+>    options = list(array)
+>    for _ in range(L):
+>        idx = int(math.log(random.random(), 1.0 - beta)) % len(options)
+>        yield options.pop(idx)
+>```
+
+
+-   **reverse**: If True, every time the algorithm merges two routes, considers the possibility to reverse them. Usually, this parameter is set to False when the inverse of an edge, is different in terms of cost or saving by the edge itself.
+
+
+-   **metaheuristic**: 
 
 
 
 
-:param biased: If True a biased randomisation is used, otherwise not.
-                    In case of active biased randomisation the callable method
-                    passed as biasedfunc is used.
-    :param biasedfunc: The function to use in case of biased randomisation
-                        required.
-    :param reverse: If True every time a merging is tried, the possibility
-                    to reverse the routes we are going to merge is considered.
-                    Usually this parameter is False when the reverse of an edge
-                    is different by the edge itself.
     :param metaheuristic: If True more solutions are generated doing a sort
                         of iterated local search, otherwise a single solution
                         is returned using the classic heuristic.
