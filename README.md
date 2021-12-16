@@ -42,4 +42,7 @@ In case of the `Street`, we don't need to include any additional aspect. Each st
 ``` python
 newstreet = Street(origin, dest, saving, cost)
 ```
-where origin is the `Customer` of origin, dest the `Customer` of destination, saving the respective saving value, and cost the respective cost value.
+where *origin* is the `Customer` of origin, *dest* the `Customer` of destination, *saving* the respective saving value, and *cost* the respective cost value.
+
+Concerning the customers, additional attributes are in this case considered, such as a reference to the *city* where the customer is located.
+You can see from the `__init__` method as each `Node` requires an *id*, and the edges (or in this case streets) connecting the the node to the depot and the depot to the node (i.e., respectively `nd_edge` and `dn_edge`).
