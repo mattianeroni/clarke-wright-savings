@@ -6,7 +6,7 @@
 #### End users
 This repository is supposed to be useful for people who have to quickly implement the Clarke &amp; Wright Savings (CWS) algorithm or a similar procedure inspired by it.
 
-#### Installation
+#### Installation (Deprecated)
 `pip install cws`
 
 #### Structure 
