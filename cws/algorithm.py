@@ -84,7 +84,7 @@ class Route (object):
         :param edges: The new edges to add to the route.
         """
         self.edges.extend(edges)
-        self.cost += sum(edge.cost for edge in self.edges)
+        self.cost += sum(edge.cost for edge in edges)
 
     def append (self, edge):
         """
