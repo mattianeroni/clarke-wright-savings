@@ -228,7 +228,7 @@ class ClarkeWrightSavings (object):
                 # If the maxcost of a route is not exceeded...
                 if iroute.cost + jroute.cost - edge.saving <= maxcost:
                     # Remove the edges to the origin in the merged routes
-                    iroute.popright(); jroute.popleft();
+                    iroute.popright(); jroute.popleft()
                     # Build the new route
                     iroute.append(edge)
                     iroute.extend(jroute.edges)
@@ -240,36 +240,39 @@ class ClarkeWrightSavings (object):
                     routes.remove(jroute)
                 # Next edge is considered
                 continue
-
-            # If it is not possible to reverse the route and the edge
-            if not reverse and (origin != iroute.last_node or dest != jroute.first_node):
-                continue
+            
+            # Control not needed?
+            # If it is not possible to reverse the routes and the edge
+            #if not reverse and (origin != iroute.last_node or dest != jroute.first_node):
+            #    continue
 
             # If the reversion of routes is possible
             if reverse:
                 # Initialise the reversed edge and routes before eventual
                 # reversing process.
                 redge, riroute, rjroute = edge, iroute, jroute
+
                 # If both routes should be reversed, reverse the edge
                 if origin == iroute.first_node and dest == jroute.last_node:
                     redge = edge.inverse
                 # Reverse the first route
-                if origin != iroute.last_node and dest == jroute.first_node:
+                elif origin != iroute.last_node and dest == jroute.first_node:
                     routes.remove(iroute)
                     riroute = self._reversed(iroute)
                     routes.append(riroute)
                 # Reverse the second route
-                if origin == iroute.last_node and dest != jroute.first_node:
+                elif origin == iroute.last_node and dest != jroute.first_node:
                     routes.remove(jroute)
                     rjroute = self._reversed(jroute)
                     routes.append(rjroute)
+
                 # Once routes and edge are ready for merging, check the cost
                 # If the cost of the new route does not exceed the maximum allowed...
                 if riroute.cost + rjroute.cost - redge.saving <= maxcost:
                     # Remove the edges to the origin in the merged routes
-                    riroute.popright(); rjroute.popleft();
+                    riroute.popright(); rjroute.popleft()
                     # Build the new route
-                    riroute.append(edge)
+                    riroute.append(redge)
                     riroute.extend(rjroute.edges)
                     # Update the reference to the route in the nodes
                     for e in itertools.islice(riroute.edges, 0, len(riroute.edges) - 1):
