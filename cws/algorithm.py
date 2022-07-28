@@ -246,20 +246,29 @@ class ClarkeWrightSavings (object):
                 continue
 
             # If the reversion of routes is possible
+            # There are three distinct "reversion cases":
+            # Case I: Start of new edge is also start of first route (i) and end of new edge is also end of second route (j). -> reverse both routes
+            # Case II: Start of new edge is also start of first route (i) and end of new edge is start of second route (j). -> reverse first route
+            # Case III: Start of new edge is end of first route (i) and end of new edge is end of second route (j). -> reverse second route
             if reverse:
                 # Initialise the reversed edge and routes before eventual
                 # reversing process.
                 redge, riroute, rjroute = edge, iroute, jroute
-                # If both routes should be reversed, reverse the edge
+                # Case I: If both routes should be reversed, reverse both routes:
                 if origin == iroute.first_node and dest == jroute.last_node:
-                    redge = edge.inverse
-                # Reverse the first route
-                if origin != iroute.last_node and dest == jroute.first_node:
                     routes.remove(iroute)
                     riroute = self._reversed(iroute)
                     routes.append(riroute)
-                # Reverse the second route
-                if origin == iroute.last_node and dest != jroute.first_node:
+                    routes.remove(jroute)
+                    rjroute = self._reversed(jroute)
+                    routes.append(rjroute)
+                # Case II: Reverse the first route
+                elif origin != iroute.last_node and dest == jroute.first_node:
+                    routes.remove(iroute)
+                    riroute = self._reversed(iroute)
+                    routes.append(riroute)
+                # Case III: Reverse the second route
+                elif origin == iroute.last_node and dest != jroute.first_node:
                     routes.remove(jroute)
                     rjroute = self._reversed(jroute)
                     routes.append(rjroute)
